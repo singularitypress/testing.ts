@@ -1,17 +1,17 @@
 import { saveVideo } from "playwright-video";
-
 const testName = "GitHub";
 
 describe(testName, () => {
   it("should show the singularitypress/ts-ssr-kit project in the search if you search for it", async () => {
-    await page.goto("https://github.com/singularitypress/ts-ssr-kit");
-    // await page.type("input[name=\"q\"]", "ts-ssr-kit");
-    // await page.press("input[name=\"q\"]", "Enter");
-    // await expect(page).toHaveText(".repo-list", "singularitypress/ts-ssr-kit");
+    await page.goto("https://github.com");
+    await page.type("input[name=\"q\"]", "ts-ssr-kit");
+    await page.press("input[name=\"q\"]", "Enter");
+    await expect(page).toHaveText(".repo-list", "singularitypress/ts-ssr-kit");
   });
   it("should contain 'How the sausage is made' in the project title", async () => {
-    const capture = await saveVideo(page, `recordings/${testName}.mp4`);
-    // await page.click(".repo-list-item:nth-child(1) a");
+    let capture = null as any;
+    if (browserName === "chromium") capture = await saveVideo(page, `recordings/${testName}.mp4`);
+    await page.click(".repo-list-item:nth-child(1) a");
     // via the CSS selector
     await expect(page).toHaveText("#readme h1", "How the sausage is made");
 
@@ -19,6 +19,6 @@ describe(testName, () => {
     await expect(page).toHaveSelector("#user-content-how-the-sausage-is-made", {
       state: "attached",
     });
-    await capture.stop();
+    if (browserName === "chromium") await capture.stop();
   });
 });
