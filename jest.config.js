@@ -4,4 +4,8 @@ module.exports = {
   transform: {
     "^.+\\.ts$": "ts-jest",
   },
+  modulePathIgnorePatterns: [
+    "node_modules",
+    "tests/aem",
+  ],
 };
