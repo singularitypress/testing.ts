@@ -68,7 +68,8 @@
     "types": [
       "@types/jest",
       "jest-playwright-preset",
-      "expect-playwright"
+      "expect-playwright",
+      "playwright-video"
     ]
   }
 }
