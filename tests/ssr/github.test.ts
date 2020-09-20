@@ -1,4 +1,5 @@
 import { saveVideo } from "playwright-video";
+import { allowedBrowsers } from "../util";
 const testName = "GitHub";
 
 describe(testName, () => {
@@ -10,6 +11,7 @@ describe(testName, () => {
   });
   it("should contain 'How the sausage is made' in the project title", async () => {
     let capture = null as any;
+    console.log(allowedBrowsers(browserName, ["chromium"]));
     if (browserName === "chromium") capture = await saveVideo(page, `recordings/${testName}.mp4`);
     await page.click(".repo-list-item:nth-child(1) a");
     // via the CSS selector
