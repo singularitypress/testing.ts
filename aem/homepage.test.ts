@@ -1,3 +1,7 @@
+import * as playwright from "playwright";
+import { Browser, Page } from "playwright";
+import { PageVideoCapture, saveVideo } from "playwright-video";
+import { IBrowserName, IBrowsers } from "../@types";
 require("dotenv").config();
 
 const {
@@ -6,26 +10,46 @@ const {
   AEM_LOCAL_AUTHOR_PASS,
 } = process.env;
 
-describe("AEM Home Page", () => {
-  it("Should have the correct headline", async () => {
-    await page.goto(`${AEM_LOCAL_AUTHOR_DOMAIN}content/org/en/home-page.html?wcmmode=disabled`);
+const testName = "AEM Home Page";
+const desktop = ["chromium", "firefox", "webkit"] as IBrowsers;
+
+let capture: PageVideoCapture;
+let browser: Browser;
+let page: Page;
+jest.setTimeout(30000);
+
+const homePageTest = (browserName: IBrowserName) => describe(`${browserName} in ${testName}`, () => {
+  beforeAll(async () => {
+    browser = await playwright[browserName].launch();
+    page = await browser.newPage();
+
+    if (!page) {
+      throw new Error("Connection wasn't established");
+    }
+
+    if (browserName === "chromium") capture = await saveVideo(page, `recordings/${testName}.mp4`);
+    // Open the page
+    await page.goto(`${AEM_LOCAL_AUTHOR_DOMAIN}content/org/en/home-page.html?wcmmode=disabled`, { waitUntil: "networkidle" });
 
     // Log into the AEM authoring environment
     await page.waitForSelector("#username");
     await page.type("#username", `${AEM_LOCAL_AUTHOR_USER}`);
     await page.waitForSelector("#password");
     await page.type("#password", `${AEM_LOCAL_AUTHOR_PASS}`);
-
-    // via the toEqualText method
-    await expect(page).toEqualText("h1", "Example Domain");
-    // or via the Playwright text selector engine
-    await expect(page).toHaveSelector("\"Example Domain\"", {
-      state: "attached",
-    });
   });
-  it("Navigate to a debit-card page", async () => {
+
+  afterAll(async () => {
+    if (browserName === "chromium") await capture.stop();
+    await browser.close();
+  });
+
+  it("should show the singularitypress/ts-ssr-kit project in the search if you search for it", async () => {
     await page.click("a.hero-button");
     // note: tomatch can also be regexes
     expect(page.url()).toMatch(`${AEM_LOCAL_AUTHOR_DOMAIN}content/org/en/debit-cards.html`);
   });
+});
+
+desktop.forEach((browserName) => {
+  homePageTest(browserName);
 });
