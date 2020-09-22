@@ -4,7 +4,10 @@
   "description": "Scaffolding a setup for testing in isomorphic react and AEM",
   "main": "index.js",
   "scripts": {
-    "test:ssr": "jest -c jest.config.ssr.js"
+    "test:ssr:android": "JEST_PLAYWRIGHT_CONFIG=\"jest-playwright.config.android.js\" jest -c jest.config.ssr.js",
+    "test:ssr:ios": "JEST_PLAYWRIGHT_CONFIG=\"jest-playwright.config.ios.js\" jest -c jest.config.ssr.js",
+    "test:ssr:desktop": "JEST_PLAYWRIGHT_CONFIG=\"jest-playwright.config.js\" jest -c jest.config.ssr.js",
+    "test:ssr": "npm run test:ssr:android && npm run test:ssr:ios && npm run test:ssr:desktop"
   },
   "repository": {
     "type": "git",
@@ -20,8 +23,8 @@
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "@types/jest": "^26.0.14",
     "@types/node": "^14.11.1",
-    "@typescript-eslint/eslint-plugin": "^4.1.1",
-    "@typescript-eslint/parser": "^4.1.1",
+    "@typescript-eslint/eslint-plugin": "^4.2.0",
+    "@typescript-eslint/parser": "^4.2.0",
     "dotenv": "^8.2.0",
     "eslint": "^7.9.0",
     "eslint-config-standard": "^14.1.1",
