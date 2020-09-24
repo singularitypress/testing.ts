@@ -3,7 +3,7 @@ module.exports = {
   transform: {
     "^.+\\.ts$": "ts-jest",
   },
-  testMatch: ["**/ssr/*.test.ts"],
+  testMatch: ["**/*/*.test.ts"],
   modulePathIgnorePatterns: [
     "node_modules",
   ],

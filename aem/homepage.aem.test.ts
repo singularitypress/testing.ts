@@ -43,7 +43,7 @@ const homePageTest = (browserName: IBrowserName) => describe(`${browserName} in 
     await browser.close();
   });
 
-  it("should show the singularitypress/ts-ssr-kit project in the search if you search for it", async () => {
+  it("Click on a button, then navigate to a page.", async () => {
     await page.click("a.hero-button");
     // note: tomatch can also be regexes
     expect(page.url()).toMatch(`${AEM_LOCAL_AUTHOR_DOMAIN}content/org/en/debit-cards.html`);
