@@ -1,18 +1,9 @@
 import * as playwright from "playwright";
 import { Browser, devices, Page } from "playwright";
 import { PageVideoCapture, saveVideo } from "playwright-video";
-import { deviceCompat } from "../util";
+import { desktop, deviceCompat, mobile } from "../util";
 
 const testName = "GitHub";
-const desktop = ["chromium", "firefox", "webkit"] as IBrowsers;
-const mobile = [
-  "iPhone SE",
-  "iPhone 11 Pro Max",
-  "iPhone 11",
-  "Pixel 2",
-  "Pixel 2 XL",
-] as IDevices;
-
 let capture: PageVideoCapture;
 let browser: Browser;
 let page: Page;

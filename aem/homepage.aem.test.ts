@@ -1,7 +1,8 @@
 import * as playwright from "playwright";
-import { Browser, Page } from "playwright";
+import { Browser, devices, Page } from "playwright";
 import { PageVideoCapture, saveVideo } from "playwright-video";
-import { IBrowserName, IBrowsers } from "../@types";
+import { desktop, deviceCompat, mobile } from "../util";
+
 require("dotenv").config();
 
 const {
@@ -11,23 +12,33 @@ const {
 } = process.env;
 
 const testName = "AEM Home Page";
-const desktop = ["chromium", "firefox", "webkit"] as IBrowsers;
 
 let capture: PageVideoCapture;
 let browser: Browser;
 let page: Page;
 jest.setTimeout(30000);
 
-const homePageTest = (browserName: IBrowserName) => describe(`${browserName} in ${testName}`, () => {
+describe.each([...desktop, ...mobile])(`%s in ${testName}`, (deviceName) => {
+  const { isDesktop, isChromium, isAndroid, isIOS } = deviceCompat(
+    deviceName,
+  );
   beforeAll(async () => {
-    browser = await playwright[browserName].launch();
-    page = await browser.newPage();
+    if (isDesktop) {
+      browser = await playwright[deviceName as IBrowserName].launch();
+      page = await browser.newPage();
+    } else if (isAndroid) {
+      browser = await playwright.chromium.launch();
+      page = await browser.newPage({ ...devices[deviceName] });
+    } else if (isIOS) {
+      browser = await playwright.webkit.launch();
+      page = await browser.newPage({ ...devices[deviceName] });
+    }
 
     if (!page) {
       throw new Error("Connection wasn't established");
     }
 
-    if (browserName === "chromium") capture = await saveVideo(page, `recordings/${testName}.mp4`);
+    if (isChromium) capture = await saveVideo(page, `recordings/${testName}.mp4`);
     // Open the page
     await page.goto(`${AEM_LOCAL_AUTHOR_DOMAIN}content/org/en/home-page.html?wcmmode=disabled`, { waitUntil: "networkidle" });
 
@@ -39,7 +50,7 @@ const homePageTest = (browserName: IBrowserName) => describe(`${browserName} in 
   });
 
   afterAll(async () => {
-    if (browserName === "chromium") await capture.stop();
+    if (isChromium) await capture.stop();
     await browser.close();
   });
 
@@ -48,8 +59,4 @@ const homePageTest = (browserName: IBrowserName) => describe(`${browserName} in 
     // note: tomatch can also be regexes
     expect(page.url()).toMatch(`${AEM_LOCAL_AUTHOR_DOMAIN}content/org/en/debit-cards.html`);
   });
-});
-
-desktop.forEach((browserName) => {
-  homePageTest(browserName);
-});
+}, 30000);
