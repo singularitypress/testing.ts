@@ -4,7 +4,7 @@
   "description": "Scaffolding a setup for testing in isomorphic react and AEM",
   "main": "index.js",
   "scripts": {
-    "test:ssr": "jest -c jest.config.ssr.js"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
