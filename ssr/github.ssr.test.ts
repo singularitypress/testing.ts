@@ -18,36 +18,6 @@ let browser: Browser;
 let page: Page;
 jest.setTimeout(30000);
 
-const searchTest = (isMobile: boolean) =>
-  it("should show the singularitypress/ts-ssr-kit project in the search if you search for it", async () => {
-    if (isMobile) {
-      await page.waitForSelector("button[aria-label=\"Toggle navigation\"]");
-      await page.click("button[aria-label=\"Toggle navigation\"]");
-      await page.waitForTimeout(500);
-    }
-
-    await page.type("input[name=\"q\"]", "ts-ssr-kit");
-    await page.press("input[name=\"q\"]", "Enter");
-
-    await page.waitForSelector(".repo-list");
-
-    expect(await page.$eval(".repo-list", (el) => el.textContent)).toContain(
-      "singularitypress/ts-ssr-kit",
-    );
-  });
-
-const textTest = () =>
-  it("should contain 'How the sausage is made' in the project title", async () => {
-    await page.click(".repo-list-item:nth-child(1) a");
-    await page.waitForSelector("#readme h1");
-    (await page.$("#readme h1"))?.scrollIntoViewIfNeeded({ timeout: 1000 });
-    await page.waitForTimeout(1000);
-    // via the CSS selector
-    expect(await page.$eval("#readme h1", (el) => el.textContent)).toContain(
-      "How the sausage is made",
-    );
-  });
-
 describe.each([...desktop, ...mobile])(
   "Check github in %s",
   (deviceName) => {
@@ -85,8 +55,33 @@ describe.each([...desktop, ...mobile])(
       await browser.close();
     });
 
-    searchTest(isAndroid || isIOS);
-    textTest();
+    it("should show the singularitypress/ts-ssr-kit project in the search if you search for it", async () => {
+      if (isAndroid || isIOS) {
+        await page.waitForSelector("button[aria-label=\"Toggle navigation\"]");
+        await page.click("button[aria-label=\"Toggle navigation\"]");
+        await page.waitForTimeout(500);
+      }
+
+      await page.type("input[name=\"q\"]", "ts-ssr-kit");
+      await page.press("input[name=\"q\"]", "Enter");
+
+      await page.waitForSelector(".repo-list");
+
+      expect(await page.$eval(".repo-list", (el) => el.textContent)).toContain(
+        "singularitypress/ts-ssr-kit",
+      );
+    });
+
+    it("should contain 'How the sausage is made' in the project title", async () => {
+      await page.click(".repo-list-item:nth-child(1) a");
+      await page.waitForSelector("#readme h1");
+      (await page.$("#readme h1"))?.scrollIntoViewIfNeeded({ timeout: 1000 });
+      await page.waitForTimeout(1000);
+      // via the CSS selector
+      expect(await page.$eval("#readme h1", (el) => el.textContent)).toContain(
+        "How the sausage is made",
+      );
+    });
   },
   30000,
 );
